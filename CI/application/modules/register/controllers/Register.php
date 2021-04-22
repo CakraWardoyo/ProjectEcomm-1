@@ -33,7 +33,8 @@ class Register extends CI_Controller {
 		$config['dbprefix'] = '';
 		$config['pconnect'] = FALSE;
 		$config['db_debug'] = TRUE;
-		$this->load->model('Register_model','',$config); //call model
+		$this->load->model('Register_model'); //call model
+		// $this->load->model('Register_model','',$config); //call model
 		}
 		
 
