@@ -7,7 +7,7 @@
 </title>
 </head>
 <body>
-  <?php print_r($this->session->userdata()); ?>
+
   <h2>Halaman Login</h2>
   <?php // Cetak jika ada notifikasi
   if($this->session->flashdata('sukses')) {

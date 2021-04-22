@@ -32,7 +32,8 @@ class Login extends CI_Controller {
 		$config['dbprefix'] = '';
 		$config['pconnect'] = FALSE;
 		$config['db_debug'] = TRUE;
-		$this->load->model('Login_model','',$config); //call model
+		$this->load->model('Login_model'); //call model
+		// $this->load->model('Login_model','',$config); //call model
 
 
 		}
