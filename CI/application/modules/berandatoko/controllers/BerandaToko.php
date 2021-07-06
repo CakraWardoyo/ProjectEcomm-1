@@ -42,15 +42,25 @@ class BerandaToko extends CI_Controller {
 
 			$no = 0;
 			$newOrder = $this->BerandaTokoModel->getNewOrder($this->session->userdata('id_toko'));
-			
+			$tUnread = 0;
+			$unread = $this->BerandaTokoModel->getUnreadMsg($this->session->userdata('id_toko'));
+
+			foreach ($unread as $key => $value) {
+				if ($value['read'] == '1') {
+					if ($value['id_receiver'] == $this->session->userdata('id_toko')) {
+						$tUnread++;
+					}
+				}
+			}
+
 			if ($newOrder != null) {
 				foreach ($newOrder as $key => $value) {
 					$no++;
 				}
 		
-				$data['total_order'] = $no;
+				$data['total_order'] = $no + $tUnread;
 			} else {
-				$data['total_order'] = 0;
+				$data['total_order'] = 0 + $tUnread;
 			}
 
 			$myTotalOrder = 0;

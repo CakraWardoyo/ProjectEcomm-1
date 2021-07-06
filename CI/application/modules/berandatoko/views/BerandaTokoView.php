@@ -3,7 +3,7 @@
   <header>
     <div class="logo">
       <a href="<?= base_url(''); ?>">
-        <img src="<?= base_url('assets/Project Toko Online/icon/logo ffs.png'); ?>" alt="">
+        <img src="<?= base_url('assets/Project Toko Online/icon/qshoes.png'); ?>" alt="">
       </a>
     </div>
     <div class="search-box" style="display: none;">
@@ -109,9 +109,8 @@
       <?php if ($this->session->userdata('username') != '') : ?>
       <div class="notify-message">
         <div class="message">
-          <a href="<?= base_url('user/chat'); ?>">
+          <a href="<?= base_url('user/chat'); ?>" id="notif-msg">
             <img src="<?= base_url('assets/Project Toko Online/icon/message.svg'); ?>">
-            <!-- <span>1</span> -->
           </a>
         </div>
       </div>
@@ -154,8 +153,11 @@
                 <a href="<?= base_url('seller'); ?>">
                   <div class="container-image">
                     <div class="circle-image">
-                      <!-- <img src="<?= base_url('assets/Project Toko Online/image/users/foto profile.png'); ?>"> -->
-                      <i class="fas fa-store"></i>
+                      <?php if ($gambar_toko != '') : ?>
+                        <img src="<?= base_url('assets/Project Toko Online/image/users/'.$gambar_toko); ?>">
+                      <?php else : ?>
+                        <i class="fas fa-store"></i>
+                      <?php endif ; ?>
                     </div>
                   </div>
                   <div class="more-info">

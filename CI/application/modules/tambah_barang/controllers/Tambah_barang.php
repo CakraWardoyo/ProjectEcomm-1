@@ -51,6 +51,7 @@ class Tambah_barang extends CI_Controller {
 		$this->load->library('upload', $config);
 
 		// print_r($this->input->post());
+		print_r($_FILES);
 
 		if ( ! $this->upload->do_upload('berkas_gambar')){
 			$error = array('error' => $this->upload->display_errors());

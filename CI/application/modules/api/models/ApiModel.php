@@ -18,8 +18,16 @@
       return $this->db->get_where('toko',array('id_user' => $idUser));
     }
 
+    public function getUserData($idUser){
+      return $this->db->get_where('user',array('id_user' => $idUser))->result_array()[0];
+    }
+
     public function resendCode($data,$email){
       $this->db->update('user', $data, array('email' => $email));
+    }
+
+    public function updateStatus($data,$idUser){
+      $this->db->update('user', $data, array('id_user' => $idUser));
     }
 
     public function deleteAccountBeforeVerification($email){
@@ -113,5 +121,42 @@
       $result = $this->db->query("SELECT id_ukuran,ukuran,harga,stok FROM ukuran WHERE id_toko = '$idToko' AND id_barang = '$idBarang'");
       return $result->result_array();
     }
-  }
+
+    public function checkMyChatMemberByIdToko($idUser,$idToko){
+      return $this->db->query("SELECT * FROM chat WHERE id_user = '$idUser' AND id_toko = $idToko GROUP BY id_toko")->result_array();
+    }
+
+    public function getMyChatMember($idUser){
+      return $this->db->query("SELECT * FROM chat c, toko t
+      WHERE c.id_user = '$idUser' AND c.id_toko = t.id_toko GROUP BY c.id_toko ORDER BY c.no_chat ASC")->result_array();
+    }
+
+    public function getLastMsg($idUser,$idToko){
+      return $this->db->query("SELECT * FROM chat WHERE id_user = '$idUser' AND id_toko = '$idToko' ORDER BY no_chat DESC")->result_array();
+    }
+
+    public function getUnreadMsg($idUser,$idToko){
+      return $this->db->get_where('chat',array('id_user' => $idUser, 'id_toko' => $idToko))->result_array();
+    }
+
+    public function getMyChatContentGroupByDate($idUser,$idToko){
+      return $this->db->query("SELECT * FROM chat WHERE id_user = '$idUser' AND id_toko = '$idToko' GROUP BY date")->result_array();
+    }
+
+    public function getMyChatContentByDate($idUser,$idToko,$date){
+      return $this->db->get_where('chat',array('id_user' => $idUser, 'id_toko' => $idToko, 'date' => $date))->result_array();
+    }
+
+    public function createMsg($data){
+      return $this->db->insert('chat', $data);
+    }
+
+    public function deleteChat($idUser,$idToko){
+      return $this->db->delete('chat', array('id_user' => $idUser, 'id_toko' => $idToko));
+    }
+
+    public function updateStatusRead($data,$idUser,$idToko){
+      $this->db->update('chat', $data, array('id_user' => $idUser, 'id_toko' => $idToko));
+    }
+  } 
 ?>

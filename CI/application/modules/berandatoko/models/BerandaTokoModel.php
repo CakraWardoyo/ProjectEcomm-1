@@ -22,5 +22,9 @@
       WHERE t.invoice = dt.invoice AND dt.id_user = '$idUser' AND t.status != 5 GROUP BY t.invoice ORDER BY t.no_transaksi ASC")->result_array(); 
     }
 
+    public function getUnreadMsg($idToko){
+      return $this->db->get_where('chat',array('id_toko' => $idToko))->result_array();
+    }
+
   }
 ?>

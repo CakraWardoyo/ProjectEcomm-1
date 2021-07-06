@@ -5,7 +5,7 @@
 	<title>Dashboard | Tutorial Simple Login Register CodeIgniter</title>
 </head>
 <body>
-	<?php print_r($this->session->userdata()) ?>
+	<!-- <?php print_r($this->session->userdata()) ?> -->
 	<h3>Dashboard</h3>
 	<p>
 	Selamat datang di halaman dashboard, <?php echo ucfirst($this->session->userdata('username')); ?>!

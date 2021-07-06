@@ -1,4 +1,7 @@
 <?php
+
+use PhpOffice\PhpSpreadsheet\Cell\Hyperlink;
+
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Api extends CI_Controller {
@@ -32,11 +35,14 @@ class Api extends CI_Controller {
 		// $tanggal = date('m-d-Y H:i:s');
 		echo '<br>';
 		// echo $tanggal;
-		$x = 'INV/20210527/0000000';
+		// $x = 'INV/20210527/0000000';
+		$x = time();
+		echo $x;
+		// print_r($_COOKIE['ciNav']);
 		// echo $x;
 		echo '<br>';
 		// echo date('Ymd');
-		$next =  substr($x, 8, 4);
+		// $next =  substr($x, 8, 4);
 		// $ne = $next + 1;
 		// echo $ne;
 		// echo sprintf('%04s', $ne);
@@ -322,6 +328,9 @@ class Api extends CI_Controller {
         	$this->session->set_userdata('id_toko', $rT != null ? $rT[0]['id_toko'] : '');
         	$this->session->set_userdata('nama_toko', $rT != null ? $rT[0]['nama_toko'] : '');
 
+					$data['status'] = 0;
+					$this->ApiModel->updateStatus($data,$res['id_user']);
+
 					echo json_encode(array(
 						'statusLogin' => true,
 						'message' => 'Login berhasil'
@@ -343,6 +352,8 @@ class Api extends CI_Controller {
 
 	public function logout(){
 		if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+			$data['status'] = 1;
+			$this->ApiModel->updateStatus($data,$this->session->userdata('id_user'));
 			$this->ApiModel->logout();
 			echo json_encode(array(
 				'statusLogout' => true
@@ -405,20 +416,64 @@ class Api extends CI_Controller {
 				$subject = "Email Verification Code";
 				$message = "QShoes - JANGAN MEMBERI TAHU KODE INI KE SIAPAPUN termasuk pihak QShoes " . $data['code_otp'];
 				$sender = "From: kurohikoblacknight5601@gmail.com";
-				if(mail($data['email'], $subject, $message, $sender)){
-					echo json_encode(array(
-						'statusSended' => true,
-						'status' => 'success',
-						'message' => 'Kode telah dikirim melalui email ke '.$data['email']
-					));
-					}else{
+				// if(mail($data['email'], $subject, $message, $sender)){
+				// 	echo json_encode(array(
+				// 		'statusSended' => true,
+				// 		'status' => 'success',
+				// 		'message' => 'Kode telah dikirim melalui email ke '.$data['email']
+				// 	));
+				// 	}else{
+				// 		$this->ApiModel->deleteAccountBeforeVerification($data['email']);
+
+				// 			echo json_encode(array(
+				// 				'statusSended' => false,
+				// 				'status' => 'error',
+				// 				'message' => 'Gagal saat mengirim kode'
+				// 			));
+				// 	}
+
+
+				// Konfigurasi email
+				$config = [
+					'mailtype' => 'html',
+					'charset' => 'utf-8',
+					'protocol' => 'smtp',
+					'smtp_host' => 'ssl://smtp.gmail.com',
+					'smtp_user' => 'kurohikoblacknight5601@gmail.com', // Ganti dengan email gmail kamu
+					'smtp_pass' => 'kirito2225', // Password gmail kamu
+					'smtp_port' => 465,
+					'crlf' => "\r\n",
+					'newline' => "\r\n"
+					];
+
+					// Load library email dan konfigurasinya
+					$this->load->library('email', $config);
+					// Email dan nama pengirim
+					$this->email->from('kurohikoblacknight5601@gmail.com', 'QShoes System');
+					// Email penerima
+					$this->email->to($data['email']); // Ganti dengan email tujuan kamu
+					// Lampiran email, isi dengan url/path file
+					// $this->email->attach('File.png');
+					// Subject email
+					$this->email->subject('Email Verification Code');
+				
+				// Isi email
+				$this->email->message("QShoes - JANGAN MEMBERI TAHU KODE INI KE SIAPAPUN termasuk pihak QShoes " . $data['code_otp']);
+				// Tampilkan pesan sukses atau error
+					if ($this->email->send()) {
+						echo json_encode(array(
+							'statusSended' => true,
+							'status' => 'success',
+							'message' => 'Kode telah dikirim melalui email ke '.$data['email']
+						));
+					} else {
 						$this->ApiModel->deleteAccountBeforeVerification($data['email']);
 
-							echo json_encode(array(
-								'statusSended' => false,
-								'status' => 'error',
-								'message' => 'Gagal saat mengirim kode'
-							));
+						echo json_encode(array(
+							'statusSended' => false,
+							'status' => 'error',
+							'message' => 'Gagal saat mengirim kode'
+						));
 					}
 			} else {
 				echo json_encode(array(
@@ -439,20 +494,62 @@ class Api extends CI_Controller {
 		$message = "QShoes - JANGAN MEMBERI TAHU KODE INI KE SIAPAPUN termasuk pihak QShoes " . $data['code_otp'];
 		$sender = "From: kurohikoblacknight5601@gmail.com";
 
-		if(mail($email, $subject, $message, $sender)){
-			echo json_encode(array(
-				'statusSended' => true,
-				'status' => 'success',
-				'message' => 'Kode baru telah dikirim melalui email ke '.$email
-			));
-			}else{
+		// if(mail($email, $subject, $message, $sender)){
+		// 	echo json_encode(array(
+		// 		'statusSended' => true,
+		// 		'status' => 'success',
+		// 		'message' => 'Kode baru telah dikirim melalui email ke '.$email
+		// 	));
+		// 	}else{
+		// 		echo json_encode(array(
+		// 			'statusSended' => false,
+		// 			'status' => 'error',
+		// 			'message' => 'Gagal saat mengirim kode'
+		// 		));
+		// 	}
+
+		// Konfigurasi email
+		$config = [
+			'mailtype' => 'html',
+			'charset' => 'utf-8',
+			'protocol' => 'smtp',
+			'smtp_host' => 'ssl://smtp.gmail.com',
+			'smtp_user' => 'kurohikoblacknight5601@gmail.com', // Ganti dengan email gmail kamu
+			'smtp_pass' => 'kirito2225', // Password gmail kamu
+			'smtp_port' => 465,
+			'crlf' => "\r\n",
+			'newline' => "\r\n"
+			];
+
+		// Load library email dan konfigurasinya
+		$this->load->library('email', $config);
+		// Email dan nama pengirim
+		$this->email->from('kurohikoblacknight5601@gmail.com', 'QShoes System');
+		// Email penerima
+		$this->email->to($email); // Ganti dengan email tujuan kamu
+		// Lampiran email, isi dengan url/path file
+		// $this->email->attach('File.png');
+		// Subject email
+		$this->email->subject('Email Verification Code');
+	
+		// Isi email
+		$this->email->message("QShoes - JANGAN MEMBERI TAHU KODE INI KE SIAPAPUN termasuk pihak QShoes " . $data['code_otp']);
+		// Tampilkan pesan sukses atau error
+			if ($this->email->send()) {
+				echo json_encode(array(
+					'statusSended' => true,
+					'status' => 'success',
+					'message' => 'Kode telah dikirim melalui email ke '.$data['email']
+				));
+			} else {
+				$this->ApiModel->deleteAccountBeforeVerification($data['email']);
+
 				echo json_encode(array(
 					'statusSended' => false,
 					'status' => 'error',
 					'message' => 'Gagal saat mengirim kode'
 				));
 			}
-
 	}
 
 	public function checkOtpCodeByEmail(){
@@ -529,5 +626,240 @@ class Api extends CI_Controller {
 		}
 	}
 
+	public function checkchatmemberbyidtoko(){
+		if ($this->session->userdata('id_user') == '') {
+			echo json_encode(array(
+				'login' => false
+			));
+		} else {
+			$t = $this->ApiModel->getTokoData($this->session->userdata('id_user'))->result_array();
+			if (empty($t)) {
+				$r = $this->ApiModel->checkMyChatMemberByIdToko($this->session->userdata('id_user'),$this->input->get('id_toko'));
+				if (empty($r)) {
+					echo json_encode(array(
+						'login' => true,
+						'sameIdT' => false,
+						'status' => false,
+						'message' => 'Chat member tidak tersedia'
+					));
+				} else {
+					echo json_encode(array(
+						'login' => true,
+						'sameIdT' => false,
+						'status' => true,
+						'message' => 'Chat member tersedia'
+					));
+				}
+			} else {
+				if ($t[0]['id_toko'] == $this->input->get('id_toko')) {
+					echo json_encode(array(
+						'login' => true,
+						'sameIdT' => true,
+						'status' => false,
+						'message' => 'Upss.. anda tidak bisa chat dengan toko anda sendiri'
+					));
+				} else {
+					$r = $this->ApiModel->checkMyChatMemberByIdToko($this->session->userdata('id_user'),$this->input->get('id_toko'));
+					if (empty($r)) {
+						echo json_encode(array(
+							'login' => true,
+							'sameIdT' => false,
+							'status' => false,
+							'message' => 'Chat member tidak tersedia'	
+						));
+					} else {
+						echo json_encode(array(
+							'login' => true,
+							'status' => true,
+							'message' => 'Chat member tersedia'
+						));
+					}
+				}
+			}
+		}
+	}
+
+	public function getmychatmember(){
+		if ($_SERVER['REQUEST_METHOD'] == 'GET' && $this->session->userdata('id_user') != '') {
+			$rC = array();
+			$r = $this->ApiModel->getMyChatMember($this->session->userdata('id_user'));
+	
+			foreach ($r as $key => $v) {
+				$unread = 0;
+				
+				$l = $this->ApiModel->getLastMsg($this->session->userdata('id_user'),$v['id_toko'])[0];
+				$x = $this->ApiModel->getUnreadMsg($this->session->userdata('id_user'),$v['id_toko']);
+
+				foreach ($x as $key => $val) {
+					if ($val['read'] == '1') {
+						if ($val['id_receiver'] == $this->session->userdata('id_user')) {
+							$unread++;
+						}
+					}
+				}
+
+				array_push($rC,array(
+					'idToko' => $v['id_toko'],
+					'namaToko' => $v['nama_toko'],
+					'gambarToko' => $v['gambar_toko'],
+					'lastMsg' => $l['msg'],
+					'time' => $l['time'],
+					'unread' => $unread
+				));
+			}
+	
+			echo json_encode(array(
+				'login' => true,
+				'id_user' => $this->session->userdata('id_user'),
+				'myChatMember' => $rC
+			));
+		}else{
+			echo json_encode(array(
+				'login' => false,
+				'status' => 'error',
+				'message' => 'Bad request. Can not find any query param'
+			));
+		}
+	}
+
+	public function getmychatcontent(){
+		if ($_SERVER['REQUEST_METHOD'] == 'GET' && $this->session->userdata('id_user') != '') {
+			$date = array();
+			$t = $this->ApiModel->getTokoByIdToko($this->input->get('id_toko'))[0];
+			$us = $this->ApiModel->getUserData($t['id_user']);
+			$g = $this->ApiModel->getMyChatContentGroupByDate($this->session->userdata('id_user'),$this->input->get('id_toko'));
+			
+			foreach ($g as $key => $val) {
+				$rC = array();
+				$r = $this->ApiModel->getMyChatContentByDate($this->session->userdata('id_user'),$this->input->get('id_toko'),$val['date']);
+
+				foreach ($r as $key => $v) {
+					if ($v['text'] == 0) {
+						array_push($rC, array(
+							'sender' => $v['id_sender'] == $this->session->userdata('id_user') ? true : false,
+							'receive' => $v['id_receiver'],
+							'msg' => $v['msg'],
+							'text' => $v['text'],
+							'time' => $v['time']
+						));	
+					} else {
+						$b = $this->ApiModel->getProductByIdBarang($this->input->get('id_toko'),$v['id_barang']);
+						$f = $this->ApiModel->getAllProductImagesByIdBarang($this->input->get('id_toko')	,$v['id_barang']);
+
+						if ($v['id_ukuran'] == 0) {
+							$ukuran = 0;
+						} else {
+							$u = $this->ApiModel->getDataUkuranByIdUkuran($v['id_ukuran']);
+							$ukuran = $u['ukuran'];
+						}
+						
+						array_push($rC, array(
+							'sender' => $v['id_sender'] == $this->session->userdata('id_user') ? true : false,
+							'receive' => $v['id_receiver'],
+							'namaBarang' => $b[0]['nama_barang'],
+							'gambarBarang' => $f,
+							'ukuran' => $ukuran,
+							'text' => $v['text'],
+							'time' => $v['time']
+						));	
+					}
+					
+				}
+
+				array_push($date, array(
+					'date' => $val['date'],
+					'chatContents' => $rC
+				));
+			}
+			
+			echo json_encode(array(
+				'idToko' => $t['id_toko'],
+				'namaToko' => $t['nama_toko'],
+				'gambarToko' => $t['gambar_toko'],
+				'online' => $us['status'],
+				'chatContents' => $date
+			));
+		}else{
+			echo json_encode(array(
+				'status' => 'error',
+				'message' => 'Bad request. Can not find any query param'
+			));
+		}
+	}
+
+	public function inputmsg(){
+		if ($_SERVER['REQUEST_METHOD'] == 'POST' && $this->session->userdata('id_user') != '') {
+			date_default_timezone_set("Asia/Jakarta");
+			$data['id_user'] = $this->session->userdata('id_user');
+			$data['id_toko'] = $this->input->post('id_toko');
+			$data['id_sender'] = $this->session->userdata('id_user');
+			$data['id_receiver'] = $this->input->post('id_toko');
+			$data['msg'] = $this->input->post('msg');
+			$data['text'] = 0;
+			$data['date'] = date('Y-m-d');
+			$data['time'] = date('H:i:s');
+			$data['read'] = 1;
+
+			$barang['id_barang'] = $this->input->post('id_barang');
+			
+			if ($barang['id_barang'] != 0) {
+				$barang['id_user'] = $data['id_user'];
+				$barang['id_toko'] = $data['id_toko'];
+				$barang['id_sender'] = $data['id_sender'];
+				$barang['id_receiver'] = $data['id_receiver'];
+				$barang['msg'] = "Produk sepatu";
+				$barang['text'] = 1;
+				$barang['id_ukuran'] = $this->input->post('id_ukuran');
+				$barang['date'] = $data['date'];
+				$barang['time'] = $data['time'];
+				$barang['read'] = 1;
+				
+				if ($barang['id_ukuran'] != 0) {
+					$barang['id_ukuran'] = $this->input->post('id_ukuran');
+
+					$this->ApiModel->createMsg($barang);
+				} else {
+					$this->ApiModel->createMsg($barang);
+				}
+			}
+	
+			if ($data['msg'] != '') {
+				$this->ApiModel->createMsg($data);
+			}
+
+			echo json_encode(array(
+				'status' => 'success',
+				'message' => 'Pesan berhasil terkirim'
+			));
+		} else {
+			echo json_encode(array(
+				'status' => 'error',
+				'message' => 'Bad request. Can not find any query param'
+			));
+		}
+	}
+
+	public function deletechat(){
+		if ($this->ApiModel->deleteChat($this->session->userdata('id_user'),$this->input->post('id_toko'))) {
+			echo json_encode(array(
+				'status' => 'success',
+				'message' => 'Chat berhasil dihapus'
+			));
+		} else {
+			echo json_encode(array(
+				'status' => 'error',
+				'message' => 'Chat gagal dihapus'
+			));
+		}
+	}
+
+	public function updatestatusread(){
+		$data['read'] = 0;
+		$this->ApiModel->updateStatusRead($data,$this->session->userdata('id_user'),$this->input->post('id_toko'));
+		echo json_encode(array(
+			'status' => 'success',
+			'message' => 'Chat berhasil dihapus'
+		));
+	}
 	
 }
