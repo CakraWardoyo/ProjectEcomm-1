@@ -55,7 +55,7 @@ const showInfo = d => {
                 <div class="product-card">
                   <a href="${baseUrl('toko/'+i.toko.domainToko+'/'+i.slug)}">
                     <div class="product-image">
-                      <img src="${baseUrl('assets/Project Toko Online/image/products/'+i.foto[0].nama_foto)}">
+                      <img src="${i.foto.length == 0 ? baseUrl('assets/Project Toko Online/image/no-product-image.png') : baseUrl('assets/Project Toko Online/image/products/'+i.foto[0].nama_foto)}">
                     </div>
                     <div class="product-info">
                       <div class="product-name">${i.namaBarang}</div>

@@ -24,6 +24,7 @@ const searchResults = document.getElementById('search-results')
 searchInput.addEventListener('keyup', async () => {
   searchInput.value = searchInput.value.replace(/[^a-zA-Z0-9\s]+/, '')
   r = await getAllProductsByName(searchInput.value)
+
   if (r == '') {
     searchResults.style.display = 'none'
   } else {
@@ -31,7 +32,7 @@ searchInput.addEventListener('keyup', async () => {
     searchResults.innerHTML = r.map(i => {
       return  `
                 <a href="${baseUrl('toko/'+i.toko.domainToko+'/'+i.slug)}" class="list-item">
-                  <img src="${baseUrl('assets/Project Toko Online/image/products/'+i.foto[0].nama_foto)}" class="list-item-img">
+                  <img src="${i.foto.length == 0 ? baseUrl('assets/Project Toko Online/image/no-product-image.png') : baseUrl('assets/Project Toko Online/image/products/'+i.foto[0].nama_foto)}" class="list-item-img">
                   <div class="list-item-name">
                     <h2>${i.namaBarang}</h2>
                   </div>
@@ -129,7 +130,7 @@ const getAllProductsByNameB = async n => {
               <div class="product-card">
                 <a href="${baseUrl('toko/'+i.toko.domainToko+'/'+i.slug)}">
                   <div class="product-image">
-                    <img src="${baseUrl('assets/Project Toko Online/image/products/'+i.foto[0].nama_foto)}">
+                    <img src="${i.foto == '' ? baseUrl('assets/Project Toko Online/image/no-product-image.png') : baseUrl('assets/Project Toko Online/image/products/'+i.foto[0].nama_foto)}">
                   </div>
                   <div class="product-info">
                     <div class="product-name">

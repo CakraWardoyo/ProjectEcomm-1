@@ -22,7 +22,7 @@ searchInputH.addEventListener('keyup', async () => {
   searchResultsH.innerHTML = r.map(i => {
     return  `
               <a href="${baseUrl('toko/'+i.toko.domainToko+'/'+i.slug)}" class="list-item">
-                <img src="${baseUrl('assets/Project Toko Online/image/products/'+i.foto[0].nama_foto)}" class="list-item-img">
+                <img src="${i.foto.length == 0 ? baseUrl('assets/Project Toko Online/image/no-product-image.png') : baseUrl('assets/Project Toko Online/image/products/'+i.foto[0].nama_foto)}" class="list-item-img">
                 <div class="list-item-name">
                   <h2>${i.namaBarang}</h2>
                 </div>
@@ -53,7 +53,7 @@ searchInputC.addEventListener('keyup', async () => {
     searchResultsC.innerHTML = r.map(i => {
       return  `
                 <a href="${baseUrl('toko/'+i.toko.domainToko+'/'+i.slug)}" class="list-item">
-                  <img src="${baseUrl('assets/Project Toko Online/image/products/'+i.foto[0].nama_foto)}" class="list-item-img">
+                  <img src="${i.foto.length == 0 ? baseUrl('assets/Project Toko Online/image/no-product-image.png') : baseUrl('assets/Project Toko Online/image/products/'+i.foto[0].nama_foto)}" class="list-item-img">
                   <div class="list-item-name">
                     <h2>${i.namaBarang}</h2>
                   </div>
@@ -78,6 +78,42 @@ document.addEventListener('click', e => {
     searchResultsC.innerHTML = ''
   }
 })
+
+const notifMsg = document.getElementById('notif-msg')
+
+const getNotifMsg = async () => {
+  const r = await fetch(baseUrl('api/getmychatmember'), {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }).then(res => {
+    if (res.ok) {
+      return res.json()
+    } else {
+      console.error('Gagal mengambil data');
+    }
+  }).then(data => data).catch(err => console.error(err))
+  
+  if (r.login != false) {
+    unread = 0
+    r.myChatMember.forEach(e => {
+      unread = e.unread + unread
+    })
+  }
+
+  if (notifMsg != null) {
+    if (unread != 0) {
+      newNotifMsg = document.createElement('span')
+      newNotifMsgText = document.createTextNode(unread)
+      
+      newNotifMsg.appendChild(newNotifMsgText)
+      notifMsg.appendChild(newNotifMsg)
+    }
+  }
+}
+
+getNotifMsg()
 
 const getAllProductsByNameH = n => {
   return fetch(baseUrl('api/getallproductsbyname/?ss='+n), {
@@ -375,7 +411,7 @@ if (accountBtn.dataset.login == 'false') {
       }
     })
   
-    inputVerificationCode.addEventListener('keyup', async () => {
+    inputVerificationCode.addEventListener('input', async () => {
   
       if (inputVerificationCode.value.length == 4) {
         resultC = await checkOtpCode(inputRegisterEmail.value,parseInt(inputVerificationCode.value))
