@@ -440,7 +440,7 @@ class Api extends CI_Controller {
 					'protocol' => 'smtp',
 					'smtp_host' => 'ssl://smtp.gmail.com',
 					'smtp_user' => 'kurohikoblacknight5601@gmail.com', // Ganti dengan email gmail kamu
-					'smtp_pass' => 'kirito2225', // Password gmail kamu
+					'smtp_pass' => 'wowesmesing213', // Password gmail kamu
 					'smtp_port' => 465,
 					'crlf' => "\r\n",
 					'newline' => "\r\n"
@@ -515,7 +515,7 @@ class Api extends CI_Controller {
 			'protocol' => 'smtp',
 			'smtp_host' => 'ssl://smtp.gmail.com',
 			'smtp_user' => 'kurohikoblacknight5601@gmail.com', // Ganti dengan email gmail kamu
-			'smtp_pass' => 'kirito2225', // Password gmail kamu
+			'smtp_pass' => 'wowesmesing213', // Password gmail kamu
 			'smtp_port' => 465,
 			'crlf' => "\r\n",
 			'newline' => "\r\n"
@@ -610,7 +610,7 @@ class Api extends CI_Controller {
 			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
 			CURLOPT_CUSTOMREQUEST => "GET",
 			CURLOPT_HTTPHEADER => array(
-				"key: 276589ca70c66fd10d6d11715bce70ca"
+				"key: 276589ca70c66fd10d6d11l0lbce70ca"
 			),
 		));
 
