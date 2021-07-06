@@ -171,7 +171,7 @@ class Checkout extends CI_Controller {
 			CURLOPT_POSTFIELDS => "origin=".$this->input->post('origin')."&destination=".$this->input->post('destination')."&weight=1000&courier=jne",
 			CURLOPT_HTTPHEADER => array(
 				"content-type: application/x-www-form-urlencoded",
-				"key: 276589ca70c66fd10d6d11715bce70ca"
+				"key: 276589ca70c66fd10d6d11l0lbce70ca"
 			),
 		));
 
